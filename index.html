@@ -17,6 +17,11 @@
     h1 {
       margin-top: 20px;
     }
+	
+	h1, h2 {
+		display: inline-block;
+		margin-right: 10px; /* Add some space between them */
+	}
 
     .button-container {
       margin: 20px auto;
@@ -64,6 +69,7 @@
   <section id="home" class="topT">
     <div class="container">
       <h1>WebGL Demo</h1>
+		<h2 id="info">infoooo</h2>
     </div>
 	
     <div class="button-container">
@@ -84,6 +90,18 @@
       alert("WebGL not supported");
       throw new Error("WebGL not supported");
     }
+	
+	function isAndroid() {
+		const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+		return /android/i.test(userAgent);
+	}
+
+    var i = document.getElementById("info");
+	if (isAndroid()) {
+	    i.innerHTML = "(Android)";
+	} else {
+	    i.innerHTML = "(Not Android)";
+	}
 
     // --- Shaders ---
     const vsSource = `
