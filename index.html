@@ -80,29 +80,32 @@
     </div>
   </section>
 
-  <canvas id="myGL" width="1240" height="480"></canvas>
+  <canvas id="myGL" width="480" height="480"></canvas>
 
   <script>
+  
+	function isAndroid() {
+		const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+		return /android/i.test(userAgent);
+	}
+    var info = document.getElementById("info");
+	if (isAndroid()) {
+		canvas.width = 480;
+		canvas.height = 640;
+	    info.innerHTML = "(Android)";
+	} else {
+	    info.innerHTML = "(Not Android)";
+	}
+
     // === WebGL Setup ===
     const canvas = document.getElementById("myGL");
+
     const gl = canvas.getContext("webgl");
     if (!gl) {
       alert("WebGL not supported");
       throw new Error("WebGL not supported");
     }
-	
-	function isAndroid() {
-		const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-		return /android/i.test(userAgent);
-	}
-
-    var i = document.getElementById("info");
-	if (isAndroid()) {
-	    i.innerHTML = "(Android)";
-	} else {
-	    i.innerHTML = "(Not Android)";
-	}
-
+		
     // --- Shaders ---
     const vsSource = `
       attribute vec2 aPosition;
