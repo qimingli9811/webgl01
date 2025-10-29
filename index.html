@@ -80,7 +80,7 @@
     </div>
   </section>
 
-  <canvas id="myGL" width="480" height="480"></canvas>
+  <canvas id="myGL" width="1280" height="480"></canvas>
 
   <script>
   
@@ -90,8 +90,6 @@
 	}
     var info = document.getElementById("info");
 	if (isAndroid()) {
-		canvas.width = 480;
-		canvas.height = 640;
 	    info.innerHTML = "(Android)";
 	} else {
 	    info.innerHTML = "(Not Android)";
@@ -99,6 +97,11 @@
 
     // === WebGL Setup ===
     const canvas = document.getElementById("myGL");
+	if(isAndroid())
+	{
+		canvas.width = 480;
+		canvas.height = 640;
+	}
 
     const gl = canvas.getContext("webgl");
     if (!gl) {
