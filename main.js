@@ -88,6 +88,7 @@ function render() {
 	requestAnimationFrame(render);
 }
 
+let currentShape = "Triangle";
 function OnBtnClick(e) {
 		currentShape = e.currentTarget.textContent;
 		loadShape(e.currentTarget.textContent);
@@ -114,8 +115,6 @@ function main() {
 	if(!program)
 		program = initShaderProgram(gl, vsSource, fsSource);
     gl.useProgram(program);
-
-    let currentShape = "Triangle";
 
     // --- Button Controls ---
     const triangleBtn = document.getElementById("triangleBtn");
