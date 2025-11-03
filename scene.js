@@ -563,14 +563,14 @@ class RenderMoon extends RenderBase
 			const view = this.translate(this.identity(), 0, 0, -this.posZ);
 			let model = this.rotateY(this.identity(), this.angle);
 			model = this.rotateX(model, this.angle);
-			this.nScale /= 1.01;
-			model = this.scale(this.identity(), this.nScale, this.nScale, 1.0);
+			//this.nScale /= 1.01;
+			//model = this.scale(this.identity(), this.nScale, this.nScale, 1.0);
 					
-const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-let proj1 = mat4.create(); 
-mat4.identity(proj1);
+//const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+//let proj1 = mat4.create(); 
+//mat4.identity(proj1);
 //mat4.
-proj1 = mat4.perspective(45*0.017453292, aspect, 0.1, 100.0, proj1);
+//proj1 = mat4.perspective(45*0.017453292, aspect, 0.1, 100.0, proj1);
 //alert(proj + '\n\n' + proj1);
 
 			const uProjLoc = gl.getUniformLocation(program, 'uProj'); 
