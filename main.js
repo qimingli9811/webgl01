@@ -372,7 +372,7 @@ function AddTopButtons()
 function main() 
 {
     const canvas = document.getElementById("myGL");
-	if(isAndroid())
+	if(isAndroid() || isiPhone())
 	{
 		canvas.width = 480;
 		canvas.height = 640;
