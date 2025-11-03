@@ -3,7 +3,7 @@ class RenderBase
 	//#ssn; // private
 	//ssn; // public
 
-	type = sceneType.Triangle;
+	type = sceneType.Triangle; 
 	program = null;
 	buffer = null;
 	vetexCount = 0;
@@ -394,26 +394,19 @@ class RenderMoon extends RenderBase
 		return buf;
 	}
 
-	posBuf;
-	texBuf;
-	normBuf;
-	idxBuf;
-	aPosition;
-	aTexCoord;
 	textures = [];
-    texIndex = 1;
+	texIndex = 1;
 	loadShape(gl)
 	{
 		if(this.textures.length < 1)
 		{		
-			//	this.textures[0] = TexFromImage(gl, 'moon.jpg');
+			//this.textures = Create_6_Textures(gl);
+			//this.textures[0] = TexFromImage(gl, 'moon.jpg');
 			this.textures[0] = TexFromImage(gl, 'earth.jpg');
 			this.textures[1] = TexFromImage(gl, 'moon.jpg');
 			this.textures[0].name = 'earth';
 			this.textures[1].name = 'moon';
-		
-			//this.textures = Create_6_Textures(gl);
-		}
+				}
 		//alert(this.textures[this.texIndex].name);
 		//gl.bindTexture(gl.TEXTURE_2D, this.textures[this.texIndex]);
 		
@@ -458,10 +451,19 @@ class RenderMoon extends RenderBase
 	  return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
 	}
 
-	translate(m, x, y, z) {
+	translateA(m, x, y, z) {
 	  const out = m.slice();
 	  out[12] = x; out[13] = y; out[14] = z;
 	  return out;
+	}
+	
+	translate(m, x, y, z) {
+		const tm = [
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		x, y, z, 1];
+		return this.multiply(m, tm);
 	}
 
 	multiply(a, b) 
@@ -470,14 +472,20 @@ class RenderMoon extends RenderBase
 		for (let i = 0; i < 4; i++)
 		{
 			for (let j = 0; j < 4; j++)
-			{
-				out[i*4+j] = a[i*4+0]*b[0*4+j] + a[i*4+1]*b[1*4+j] +
-					a[i*4+2]*b[2*4+j] + a[i*4+3]*b[3*4+j];
-			}
+				out[i*4+j] = a[i*4+0]*b[0*4+j] + a[i*4+1]*b[1*4+j] + a[i*4+2]*b[2*4+j] + a[i*4+3]*b[3*4+j];
 		}
 		return out;
     }
 
+	rotateX(m, angle) {
+		const c = Math.cos(angle);
+		const s = Math.sin(angle);
+		const r = this.identity();
+		r[5] = c; r[6] = -s; r[9] = s; r[10] = c;
+		return this.multiply(m, r);
+	}
+  
+	//Math.sin(a): a in radians, not degrees
 	rotateY(m, angle)
 	{
 	  const c = Math.cos(angle), s = Math.sin(angle);
@@ -485,10 +493,28 @@ class RenderMoon extends RenderBase
 	  r[0] = c; r[2] = s; r[8] = -s; r[10] = c;
 	  return this.multiply(m, r);
 	}
+	
+	rotateZ(m, angle) {
+		const c = Math.cos(angle), s = Math.sin(angle);
+		const r = this.identity();
+		r[0] = c; r[1] = -s; r[4] = s; r[5] = c;
+		return this.multiply(m, r);
+	}
+	
+	scale(m, sx, sy, sz) {
+		const sm = [
+		sx, 0,  0,  0,
+		0,  sy, 0,  0,
+		0,  0,  sz, 0,
+		0,  0,  0,  1
+		];
+		return this.multiply(m, sm);
+	}
 
 	angle = 0;
 	posZ = 3.0;
 	posZ_Step = 1.005;
+	nScale = 1.0;
 	Draw(gl)
 	{
 		gl.bindTexture(gl.TEXTURE_2D, this.textures[this.texIndex]);
@@ -504,21 +530,57 @@ class RenderMoon extends RenderBase
 		gl.enable(gl.BLEND);
 		gl.enable(gl.DEPTH_TEST);
 
-//		const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 		this.posZ *= this.posZ_Step;
 		if(this.posZ > 30 || this.posZ < 2.0)
 			this.posZ_Step = 1.0/this.posZ_Step;
-		const proj = this.perspective(Math.PI / 4, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100);
-		const view = this.translate(this.identity(), 0, 0, -this.posZ);
-		const model = this.rotateY(this.identity(), angle);
+		
+		if(0)
+		{
+			const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+			let proj1 = mat4.create();
+			mat4.identity(proj1);
+		    mat4.perspective(45, aspect, 0.1, 100.0, proj1);
 
-		const uModel = gl.getUniformLocation(program, 'uModel');
-		const uView = gl.getUniformLocation(program, 'uView');
-		const uProj = gl.getUniformLocation(program, 'uProj');
+			let model1 = mat4.create();
+			mat4.identity(model1);
+			mat4.rotate(model1, this.angle, [0, 1, 0]);  //pi/180=0.017453292
 
-		gl.uniformMatrix4fv(uProj, false, proj);
-		gl.uniformMatrix4fv(uView, false, view);
-		gl.uniformMatrix4fv(uModel, false, model);
+			let view1 = mat4.create();
+			mat4.identity(view1);
+			mat4.translate(view1, 0.0, 0.0, -this.posZ);
+
+			const uProjLoc = gl.getUniformLocation(program, 'uProj');
+			const uViewLoc = gl.getUniformLocation(program, 'uView');
+			const uModelLoc = gl.getUniformLocation(program, 'uModel');
+			gl.uniformMatrix4fv(uProjLoc, false, proj1);
+			gl.uniformMatrix4fv(uViewLoc, false, view1);
+			gl.uniformMatrix4fv(uModelLoc, false, model1);
+		}
+
+		else
+		{
+			const proj = this.perspective(Math.PI / 4, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100);
+			const view = this.translate(this.identity(), 0, 0, -this.posZ);
+			let model = this.rotateY(this.identity(), this.angle);
+			model = this.rotateX(model, this.angle);
+			this.nScale /= 1.01;
+			model = this.scale(this.identity(), this.nScale, this.nScale, 1.0);
+					
+const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+let proj1 = mat4.create(); 
+mat4.identity(proj1);
+//mat4.
+proj1 = mat4.perspective(45*0.017453292, aspect, 0.1, 100.0, proj1);
+//alert(proj + '\n\n' + proj1);
+
+			const uProjLoc = gl.getUniformLocation(program, 'uProj'); 
+			const uViewLoc = gl.getUniformLocation(program, 'uView');
+			const uModelLoc = gl.getUniformLocation(program, 'uModel');
+			gl.uniformMatrix4fv(uProjLoc, false, proj);
+			gl.uniformMatrix4fv(uViewLoc, false, view);
+			gl.uniformMatrix4fv(uModelLoc, false, model);
+		}
+		
 
 		gl.drawElements(gl.TRIANGLES, this.sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
