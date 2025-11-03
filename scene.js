@@ -48,7 +48,7 @@ class RenderBase
 
 		const uAngle = gl.getUniformLocation(program, "uAngle");
 		gl.uniform1f(uAngle, angle);
-		gl.clearColor(0.05, 0.05, 0.1, 1.0);
+		gl.clearColor(0.1, 0.01, 0.1, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 		gl.drawArrays(gl.TRIANGLES, 0, this.vertexCount);
 	}
@@ -255,7 +255,7 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		//super.Draw();
 		gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
 
-        gl.clearColor(0.1, 0.1, 0.1, 1.0); // Set background color
+		gl.clearColor(0.1, 0.01, 0.1, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
 		const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
@@ -286,8 +286,17 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		
 		if(this.textures.length < 1)
 		{
-			this.textures = Create_6_Textures(gl);
+			//this.textures = Create_6_Textures(gl);
+			
+			this.textures.push(TexFromImage(gl, '01.jpg'));
+			this.textures.push(TexFromImage(gl, '02.jpg'));
+			this.textures.push(TexFromImage(gl, '03.jpg'));
+			this.textures.push(TexFromImage(gl, '04.jpg'));
+			this.textures.push(TexFromImage(gl, '05.jpg'));
+			this.textures.push(TexFromImage(gl, '06.jpg'));
 			this.texSquare = TexFromImage(gl, '02.jpg');
+			if(this.textures.length != 6)
+				alert("Failed loading 6 textures");
 		}
 
 		for(let nB = 0; nB < nCubies; nB++)
@@ -406,12 +415,7 @@ class RenderMoon extends RenderBase
 			//this.textures = Create_6_Textures(gl);
 		}
 		//alert(this.textures[this.texIndex].name);
-		
-		gl.bindTexture(gl.TEXTURE_2D, this.textures[this.texIndex]);
-		if(this.texIndex == 0)
-			this.texIndex = 1;
-		else
-			this.texIndex = 0;
+		//gl.bindTexture(gl.TEXTURE_2D, this.textures[this.texIndex]);
 		
 		gl.useProgram(this.program);
 		this.sphere = this.initSphere(gl);
@@ -485,9 +489,11 @@ class RenderMoon extends RenderBase
 	angle = 0;
 	Draw(gl)
 	{
+		gl.bindTexture(gl.TEXTURE_2D, this.textures[this.texIndex]);
+
   	    const program = this.program; //this.program;
 		gl.useProgram(program);
-		gl.clearColor(0.5, 0.05, 0.1, 1.0);
+		gl.clearColor(0.1, 0.01, 0.1, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 
 		gl.disable(gl.CULL_FACE);

@@ -134,9 +134,9 @@ editBox1.addEventListener('change', TextChange);
 const uiButtons = [
   { x: 25, y: 20,  width: 80, height: 25, id : 0, label: 'Pause Circle', visible: true, checked: false },
   { x: 25, y: 60,  width: 80, height: 25, id : 1, label: 'Pause Obj',    visible: true, checked: false },
-  { x: 25, y: 100, width: 80, height: 25, id : 2, label: 'Button 3', visible: true, checked: false },
-  { x: 25, y: 140, width: 80, height: 25, id : 3, label: 'Btn',    visible: true, checked: false },
-  { x: 25, y: 180, width: 80, height: 25, id : 4, label: 'Button 3', visible: true, checked: false }
+  { x: 25, y: 100, width: 80, height: 25, id : 2, label: 'Earth', visible: false, checked: false },
+  { x: 25, y: 140, width: 80, height: 25, id : 3, label: 'Btn 3',    visible: false, checked: false },
+  { x: 25, y: 180, width: 80, height: 25, id : 4, label: 'Button 3', visible: false, checked: false }
 ];
 
 let currentShape = null;
@@ -147,21 +147,20 @@ function OnBtnClick(e)
 	//console.log(`A button was clicked! Its text is: ${e.currentTarget.textContent}`);	
 	//alert(e.currentTarget.id + "=" + sceneType.Triangle);
 	
+	uiButtons[2].visible = false;
+	uiButtons[3].visible = false;
+	uiButtons[4].visible = false;
 	editBox1.style.display = "none";
 	if(nShape == sceneType.Square)
 	{
 		currentShape = gAll.renderObj["Square"];
-
-		uiButtons[2].visible = false;
-		uiButtons[3].visible = false;
-		uiButtons[4].visible = false;
 	}
 	else if(nShape == sceneType.Triangle)
 	{	
 		currentShape = gAll.renderObj["Trangle"];
-		uiButtons[2].visible = true;
-		uiButtons[3].visible = true;
-		uiButtons[4].visible = true;
+		//uiButtons[2].visible = true;
+		//uiButtons[3].visible = true;
+		//uiButtons[4].visible = true;
 	}
 	else if(nShape == sceneType.Cubic)
 	{
@@ -171,6 +170,7 @@ function OnBtnClick(e)
 	else if(nShape == sceneType.Moon)
 	{
 		currentShape = gAll.renderObj["Moon"];
+		uiButtons[2].visible = true;
 	}
 	else
 		return;
@@ -293,7 +293,8 @@ gAll.uiCanvas.addEventListener('mousemove', function(e) {
 // Handle clicks
 //NOTE: arrow function does not have "this"
 //gAll.uiCanvas.addEventListener('click', () => {
-gAll.uiCanvas.addEventListener('click', function() {
+gAll.uiCanvas.addEventListener('click', function() 
+{
   for (let i = 0; i < uiButtons.length; i++) {
     const btn = uiButtons[i];
     if (!btn.visible) continue;
@@ -301,13 +302,28 @@ gAll.uiCanvas.addEventListener('click', function() {
     if (mousePos.x >= btn.x && mousePos.x <= btn.x + btn.width &&
         mousePos.y >= btn.y && mousePos.y <= btn.y + btn.height) {
 
-		btn.checked = !btn.checked;
+	btn.checked = !btn.checked;
 
       // Action for button 1: hide button 3
 	  if (btn.id == 0)
   		bPauseCircle = btn.checked;
       else if (btn.id == 1)
-	  bPauseObj =  btn.checked;
+		bPauseObj =  btn.checked;
+	  else if(btn.id == 2)
+	  {
+		  btn.checked = false;
+		  if(gAll.renderObj["Moon"].texIndex == 0)
+		  {
+			gAll.renderObj["Moon"].texIndex = 1;
+			btn.label = 'Earth';
+		  }
+		  else
+		  {
+		  	gAll.renderObj["Moon"].texIndex = 0;	
+			btn.label = 'Moon';
+		  }
+	  }
+
       //uiButtons[2].visible = uiButtons[2].visible == false;
 
 	  //if(btn.id != 0)
@@ -389,7 +405,7 @@ function main()
 	gAll.renderObj["Square"]  = new RenderSquare(gAll.program02);
 	gAll.renderObj["Cubic"]   = new RenderCubic(gAll.programCubic);
 	gAll.renderObj["Moon"]    = new RenderMoon(gAll.programMoon);
-
+	
 	currentShape = gAll.renderObj["Trangle"];
 	
 	const ui2D = gAll.uiCanvas;

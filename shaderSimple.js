@@ -79,7 +79,7 @@ gl_Position = vec4(aPosition.x, aPosition.y, 0.0, 1.0);
 const fsCubic = `
 	//precision highp float;
 	precision mediump float;
-	precision highp int;
+	precision highp int;   //int in vertex-shader is highp, default for fs is mediump
 	varying vec2 vTexCoord;
 	
 	uniform int  nType; // A uniform is accessible in both shaders
@@ -176,31 +176,32 @@ const psMoon1 = `
 	`;
 //======================================================
 const vsMoon = `
-attribute vec3 aPosition;
-attribute vec2 aTexCoord;
-attribute vec3 aNormal;
-uniform mat4 uModel;
-uniform mat4 uView;
-uniform mat4 uProj;
-varying vec3 vNormal;
-varying vec2 vTexCoord;
-void main() {
-  vNormal = mat3(uModel) * aNormal;
-  gl_Position = uProj * uView * uModel * vec4(aPosition, 1.0);
-  vTexCoord = aTexCoord;
-}
+	attribute vec3 aPosition;
+	attribute vec2 aTexCoord;
+	attribute vec3 aNormal;
+	uniform mat4 uModel;
+	uniform mat4 uView;
+	uniform mat4 uProj;
+	varying vec3 vNormal;
+	varying vec2 vTexCoord;
+	void main() {
+	  vNormal = mat3(uModel) * aNormal;
+	  gl_Position = uProj * uView * uModel * vec4(aPosition, 1.0);
+	  vTexCoord = aTexCoord;
+	}
 `;
 
 const psMoon = `
-precision mediump float;
-varying vec3 vNormal;
-varying vec2 vTexCoord;
-uniform sampler2D uSampler;
-void main() {
-  vec3 lightDir = normalize(vec3(0.5, 0.7, 1.0));
-  float diff = max(dot(normalize(vNormal), lightDir), 0.0);
-  vec3 color = vec3(0.3, 0.6, 1.0) * diff + vec3(0.05);
-  gl_FragColor = vec4(color, 1.0);
-  gl_FragColor = texture2D(uSampler, vTexCoord);
-}
+	precision mediump float;
+	varying vec3 vNormal;
+	varying vec2 vTexCoord;
+	uniform sampler2D uSampler;
+	void main() 
+	{
+	  vec3 lightDir = normalize(vec3(0.5, 0.7, 1.0));
+	  float diff = max(dot(normalize(vNormal), lightDir), 0.0);
+	  vec3 color = vec3(0.3, 0.6, 1.0) * diff + vec3(0.05);
+	  gl_FragColor = vec4(color, 1.0);
+	  gl_FragColor = texture2D(uSampler, vTexCoord);
+	}
 `;
