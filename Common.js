@@ -144,9 +144,9 @@ var createWebGL = function (canGL)
         gl = null;
 	}
 
-	if(gl && !gl.getExtension('OES_texture_float_linear'))
+	//if(gl && !gl.getExtension('OES_texture_float_linear'))
 	{
-        alert('Fail OES_texture_float_linear');
+      //  alert('Fail OES_texture_float_linear');
         //gl = null;
 	}
 	
@@ -156,8 +156,6 @@ var createWebGL = function (canGL)
 		if (!ext)
 			alert('need ANGLE_instanced_arrays');
 	}
-if(gl)
-alert("OK-5");	
 		
     return gl;
 };
