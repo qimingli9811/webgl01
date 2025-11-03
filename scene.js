@@ -487,6 +487,8 @@ class RenderMoon extends RenderBase
 	}
 
 	angle = 0;
+	posZ = 3.0;
+	posZ_Step = 1.005;
 	Draw(gl)
 	{
 		gl.bindTexture(gl.TEXTURE_2D, this.textures[this.texIndex]);
@@ -503,9 +505,11 @@ class RenderMoon extends RenderBase
 		gl.enable(gl.DEPTH_TEST);
 
 //		const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-
-		const proj = this.perspective(Math.PI / 3, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100);
-		const view = this.translate(this.identity(), 0, 0, -3);
+		this.posZ *= this.posZ_Step;
+		if(this.posZ > 30 || this.posZ < 2.0)
+			this.posZ_Step = 1.0/this.posZ_Step;
+		const proj = this.perspective(Math.PI / 4, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100);
+		const view = this.translate(this.identity(), 0, 0, -this.posZ);
 		const model = this.rotateY(this.identity(), angle);
 
 		const uModel = gl.getUniformLocation(program, 'uModel');
