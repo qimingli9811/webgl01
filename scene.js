@@ -407,13 +407,19 @@ class RenderMoon extends RenderBase
 			//	this.textures[0] = TexFromImage(gl, 'moon.jpg');
 			this.textures[0] = TexFromImage(gl, 'earth.jpg');
 			this.textures[1] = TexFromImage(gl, 'moon.jpg');
+			this.textures[0].name = 'earth';
+			this.textures[1].name = 'moon';
 		
 			//this.textures = Create_6_Textures(gl);
-			//alert(this.textures[0]);
 		}
+
+alert(this.textures[this.texIndex].name);
 		
-		gl.bindTexture(gl.TEXTURE_2D, this.textures[this.texIndex % 2]);
-		this.texIndex++;
+		gl.bindTexture(gl.TEXTURE_2D, this.textures[this.texIndex]);
+		if(this.texIndex == 0)
+			this.texIndex = 1;
+		else
+			this.texIndex = 0;
 		
 		gl.useProgram(this.program);
 		this.sphere = this.initSphere(gl);
@@ -476,7 +482,8 @@ class RenderMoon extends RenderBase
 		return out;
     }
 
-	rotateY(m, angle) {
+	rotateY(m, angle)
+	{
 	  const c = Math.cos(angle), s = Math.sin(angle);
 	  const r = this.identity();
 	  r[0] = c; r[2] = s; r[8] = -s; r[10] = c;
@@ -494,27 +501,25 @@ class RenderMoon extends RenderBase
 		gl.disable(gl.CULL_FACE);
 		//gl.cullFace(gl.BACK);
 		//gl.disable(gl.BLEND);
+		gl.enable(gl.BLEND);
 		gl.enable(gl.DEPTH_TEST);
 
 //		const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
 
-  const proj = this.perspective(Math.PI / 3, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100);
-  const view = this.translate(this.identity(), 0, 0, -3);
-  const model = this.rotateY(this.identity(), angle);
+		const proj = this.perspective(Math.PI / 3, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100);
+		const view = this.translate(this.identity(), 0, 0, -3);
+		const model = this.rotateY(this.identity(), angle);
 
-	const uModel = gl.getUniformLocation(program, 'uModel');
-const uView = gl.getUniformLocation(program, 'uView');
-const uProj = gl.getUniformLocation(program, 'uProj');
+		const uModel = gl.getUniformLocation(program, 'uModel');
+		const uView = gl.getUniformLocation(program, 'uView');
+		const uProj = gl.getUniformLocation(program, 'uProj');
 
-  gl.uniformMatrix4fv(uProj, false, proj);
-  gl.uniformMatrix4fv(uView, false, view);
-  gl.uniformMatrix4fv(uModel, false, model);
+		gl.uniformMatrix4fv(uProj, false, proj);
+		gl.uniformMatrix4fv(uView, false, view);
+		gl.uniformMatrix4fv(uModel, false, model);
 
-  gl.drawElements(gl.TRIANGLES, this.sphere.indices.length, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(gl.TRIANGLES, this.sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
-  this.angle += 0.01;
-  
-        //this.drawSphere(gl, program, this.textures[0]);
-		//gl.enable(gl.BLEND);
-	}
+		this.angle += 0.01;
+  	}
 }
