@@ -126,6 +126,8 @@ var createWebGL = function (canGL)
 		//gl = canGL.getContext('webgl2', { alpha: true, antialias: true });
 		//if(!gl) //GLSL ES 1.0
 		gl = canGL.getContext('webgl', { alpha: true, antialias: true });
+if(gl)
+alert("OK-1");	
 		if(!gl)
 			gl = canGL.getContext('experimental-webgl');
     } catch (e) {
@@ -137,18 +139,24 @@ var createWebGL = function (canGL)
         alert('Unable to initialize WebGL. Your browser may not support it.');
         gl = null;
     }
+if(gl)
+alert("OK-2");	
 	
     if (gl && !gl.getExtension('OES_texture_float'))
 	{
         alert('Fail OES_texture_float');
         gl = null;
 	}
+if(gl)
+alert("OK-3");	
 
 	if(gl && !gl.getExtension('OES_texture_float_linear'))
 	{
         alert('Fail OES_texture_float_linear');
         gl = null;
 	}
+if(gl)
+alert("OK-4");	
 	
 	if(gl)
 	{
@@ -156,6 +164,8 @@ var createWebGL = function (canGL)
 		if (!ext)
 			alert('need ANGLE_instanced_arrays');
 	}
+if(gl)
+alert("OK-5");	
 		
     return gl;
 };
