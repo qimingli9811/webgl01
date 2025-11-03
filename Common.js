@@ -116,6 +116,11 @@ function isAndroid() {
 	return /android/i.test(userAgent);
 }
 
+function isiPhone() {
+	const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+	return /iPhone/i.test(userAgent);
+}
+
 //=================================================
 var createWebGL = function (canGL) 
 {
