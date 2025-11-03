@@ -57,6 +57,8 @@ function renderGL(time)
     var info = document.getElementById("info");
 	if (isAndroid())
 	    info.innerHTML = "(Android) " + nCount;
+	else if(isiPhone())
+	    info.innerHTML = "(iPhone) " + nCount;
 	else
 	    info.innerHTML = nCount;
 
