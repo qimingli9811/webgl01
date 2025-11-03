@@ -412,8 +412,7 @@ class RenderMoon extends RenderBase
 		
 			//this.textures = Create_6_Textures(gl);
 		}
-
-alert(this.textures[this.texIndex].name);
+		//alert(this.textures[this.texIndex].name);
 		
 		gl.bindTexture(gl.TEXTURE_2D, this.textures[this.texIndex]);
 		if(this.texIndex == 0)
