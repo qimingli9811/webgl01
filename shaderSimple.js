@@ -79,6 +79,7 @@ gl_Position = vec4(aPosition.x, aPosition.y, 0.0, 1.0);
 const fsCubic = `
 	//precision highp float;
 	precision mediump float;
+	precision highp int;
 	varying vec2 vTexCoord;
 	
 	uniform int  nType; // A uniform is accessible in both shaders

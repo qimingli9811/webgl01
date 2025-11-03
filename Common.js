@@ -144,17 +144,15 @@ var createWebGL = function (canGL)
         gl = null;
 	}
 
-	//if(gl && !gl.getExtension('OES_texture_float_linear'))
+	if(gl && !gl.getExtension('OES_texture_float_linear'))
 	{
-      //  alert('Fail OES_texture_float_linear');
+		//  alert('Fail OES_texture_float_linear');
         //gl = null;
 	}
 	
-	if(gl)
+	if(gl && !gl.getExtension('ANGLE_instanced_arrays'))
 	{
-		const ext = gl.getExtension('ANGLE_instanced_arrays');
-		if (!ext)
-			alert('need ANGLE_instanced_arrays');
+		alert('Fail ANGLE_instanced_arrays');
 	}
 		
     return gl;
