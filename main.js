@@ -406,7 +406,7 @@ function main()
 	gAll.renderObj["Cubic"]   = new RenderCubic(gAll.programCubic);
 	gAll.renderObj["Moon"]    = new RenderMoon(gAll.programMoon);
 	
-	currentShape = gAll.renderObj["Trangle"];
+	currentShape = gAll.renderObj["Cubic"];
 	
 	const ui2D = gAll.uiCanvas;
 	gAll.ctx = ui2D.getContext('2d');
