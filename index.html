@@ -1,34 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebGL Demo</title>
+<style>
+  body {
+    font-family: sans-serif;
+    margin: 0;
+    background: #111;
+    color: white;
+  }
+
+  /* === GRADIENT HEADER SECTION === */
+  .header {
+    background: linear-gradient(90deg, #006bff, #00c3ff);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+    padding: 20px;
+  }
+
+  @keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .container {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .text-block {
+    flex: 0 0 auto;
+    margin-right: 20px;
+  }
+
+  .large-text {
+    font-size: 2em;
+    font-weight: bold;
+    line-height: 1.1;
+    background: linear-gradient(90deg, #ffcc00, #ff0066);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .small-text {
+    font-size: 0.9em;
+    background: linear-gradient(90deg, #00ffaa, #0099ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1;
+  }
+
+  button {
+    padding: 6px 10px;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px); /* nice frosted glass effect */
+  }
+
+  button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 1);
+  }
+
+  button.active {
+    background-color: #00c853; /* green */
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #00c853;
+  }
+
+  /* === CANVAS SECTION (OVERLAPPING) === */
+  .canvas-wrapper {
+    position: relative;
+    margin: 10px auto; /* center horizontally */
+  }
+
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 4px;
+    display: block;
+  }
+
+  #myGL {
+    z-index: 0; /* background */
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  #uiCanvas {
+    z-index: 1; /* on top */
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    pointer-events: auto; /* let clicks pass through */
+  }
   
-  <title>WebGL Example</title>
-  <link rel="stylesheet" type="text/css" href="main.css">
+  .myEdit:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+    border: 2px solid rgba(255, 255, 255, 1.0);
+    color: white;
+  }
+
+  .myEdit {
+    position: absolute;
+    top: 20px;
+    left: 125px;
+    width: 50px;
+    height: 20px;
+    background: rgba(255,255,255,0.0);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    font-size: 12px;
+	text-align: center;      /* centers the text horizontally */
+	border-radius: 4px;
+    padding: 1px 0px 0px 0px;
+    outline: none;
+    backdrop-filter: blur(4px);
+    z-index: 2; /* on top */
+  }
+  
+  #editBox1 {
+     left: 190px;       /* X position for first box */
+  }
+
+  .myEdit::placeholder {
+    color: #606060;
+  }
+  
+  input {
+    color: #606060;
+  }
+  
+  canvas:focus {
+	outline: none;
+  }
+
+</style>
 </head>
 <body>
-  <header class="topT">
-	<h1>WebGL <br><span id="info">3456</span></h1>
 
-    <div class="buttons">
-      <button class="myButton active" id="Btn1">Triangle</button>
-      <button class="myButton" id="Btn2">Square</button>
-      <button class="myButton" id="Btn3">Projects</button>
-      <button class="myButton" id="Btn4">Gallery</button>
-      <button class="myButton" id="Btn5">Services</button>
-      <button class="myButton" id="Btn6">Contact</button>
-      <button class="myButton" id="Btn7">Blog</button>
-      <button class="myButton" id="Btn8">Store</button>
-      <button class="myButton" id="Btn9">FAQ</button>
-      <button class="myButton active" id="Btn10">Support</button>
-	  </div>
-  </header>
+<!-- Gradient header (text + buttons) -->
+<div class="header">
+  <div class="container">
+    <div class="text-block">
+      <div class="large-text">WebGL</div>
+      <div class="small-text" id="info">info</div>
+    </div>
 
-  <canvas id="myGL" width="1280" height="480"></canvas>
+    <div class="button-container">
+      <button class="myButton active" id="1">Triangle</button>
+      <button class="myButton" id="2">Square</button>
+      <button class="myButton" id="3">Cubic</button>
+      <button class="myButton" id="4">Sphere</button>
+      <button class="myButton" id="5">Services</button>
+      <button class="myButton" id="6">Contact</button>
+      <!-- button class="myButton" id="7">Blog</button>
+      <button class="myButton" id="8">Store</button>
+      <button class="myButton" id="9">FAQ</button>
+      <button class="myButton" id="10">Support</button -->
+    </div>
+  </div>
+</div>
+
+  <!-- Overlapping canvases -->
+  <div class="canvas-wrapper">
+    <canvas id="myGL" width="1040" height="640"></canvas>
+    <canvas id="my2D" width="1040" height="640"></canvas>
+    <input type="text" class="myEdit" id="editBox" placeholder="Enter text...">
+    <input type="text" class="myEdit" id="editBox1" placeholder="Enter text...">
+  </div>
+
   <script src="glMatrix-0.9.5.min.js"></script>
+  <script src="scene.js"></script>
   <script src="Common.js"></script>
-  <script src="shader.js"></script>
+  <script src="shaderSimple.js"></script>
   <script src="main.js"></script>
+
 </body>
 </html>

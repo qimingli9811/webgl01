@@ -22,6 +22,101 @@ function onResize()
 }
 
 //=================================================
+function getAllItems(obj) 
+{
+	let message = '';
+	for (let key in obj)
+		message += `${key}: ${obj[key]} (type: ${typeof obj[key]}) (${obj[key].BYTES_PER_ELEMENT})\n`;
+
+	return message;
+}
+
+//=================================================
+function isPowerOf2(value) {
+  return (value & (value - 1)) === 0;
+}
+
+//=================================================
+//src = 'moon.jpg'
+function TexFromImage(gl, src)
+{
+	const texture = gl.createTexture();
+	const image = new Image();
+	image.crossOrigin = "";  // needed if loading from another origin
+	//image.src = 'moon.jpg';
+	image.src = src;
+	image.onload = () => {
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); // Flip so UVs match
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+		if (isPowerOf2(image.width) && isPowerOf2(image.height))
+			gl.generateMipmap(gl.TEXTURE_2D);
+		else
+		{
+			// Non-power-of-2: disable mipmaps and clamp wrapping
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		}
+	}
+
+	return texture;
+}
+
+//=================================================
+function generateFace(ctx, faceColor, textColor, text)
+{
+  const {width, height} = ctx.canvas;  
+  ctx.fillStyle = faceColor;
+  ctx.fillRect(0, 0, width, height);
+  ctx.font = `${width * 0.7}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = textColor;
+  ctx.fillText(text, width / 2, height / 2);
+}
+
+function Create_6_Textures(gl)
+{
+	// Get A 2D context @type {Canvas2DRenderingContext}
+	const ctx = document.createElement("canvas").getContext("2d");
+	ctx.canvas.width = 256;
+	ctx.canvas.height = 256;
+
+	const faceInfos = [
+	{ target: gl.TEXTURE_2D, faceColor: '#F00', textColor: '#0FF', text: '+X' },
+	{ target: gl.TEXTURE_2D, faceColor: '#FF0', textColor: '#00F', text: '-X' },
+	{ target: gl.TEXTURE_2D, faceColor: '#0F0', textColor: '#F0F', text: '+Y' },
+	{ target: gl.TEXTURE_2D, faceColor: '#0FF', textColor: '#F00', text: '-Y' },
+	{ target: gl.TEXTURE_2D, faceColor: '#00F', textColor: '#FF0', text: '+Z' },
+	{ target: gl.TEXTURE_2D, faceColor: '#F0F', textColor: '#0F0', text: '-Z' },
+	];
+	
+	let textures = [];
+	faceInfos.forEach((Info) => {
+		const {target, faceColor, textColor, text} = Info;
+		generateFace(ctx, Info.faceColor, Info.textColor, Info.text);
+	
+		const level = 0;
+		const internalFormat = gl.RGBA;
+		const format = gl.RGBA;
+		const type = gl.UNSIGNED_BYTE;
+		const texture = gl.createTexture();
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texImage2D(target, level, internalFormat, format, type, ctx.canvas);
+		gl.generateMipmap(gl.TEXTURE_2D);
+		textures.push(texture);
+	});
+	return textures;
+}
+//=================================================
+function isAndroid() {
+	const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+	return /android/i.test(userAgent);
+}
+
+//=================================================
 var createWebGL = function (canGL) {
 	let gl = null;
     try {
@@ -79,11 +174,6 @@ function initShaderProgram(gl, vsSource, fsSource)
         return null;
     }
     return shaderProgram;
-}
-
-//=================================================
-function isPowerOf2(value) {
-  return (value & (value - 1)) === 0;
 }
 
 //=================================================
