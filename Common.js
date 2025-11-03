@@ -117,9 +117,11 @@ function isAndroid() {
 }
 
 //=================================================
-var createWebGL = function (canGL) {
+var createWebGL = function (canGL) 
+{
 	let gl = null;
-    try {
+    try
+	{
 		//support: GLSL ES 1.0 and GLSL ES 3.0 period
 		//gl = canGL.getContext('webgl2', { alpha: true, antialias: true });
 		//if(!gl) //GLSL ES 1.0
@@ -130,10 +132,23 @@ var createWebGL = function (canGL) {
         gl = null;
     }
 
-    if (!gl || !gl.getExtension('OES_texture_float') || !gl.getExtension('OES_texture_float_linear')) {
+    if (!gl)
+	{
         alert('Unable to initialize WebGL. Your browser may not support it.');
         gl = null;
     }
+	
+    if (gl && !gl.getExtension('OES_texture_float'))
+	{
+        alert('Fail OES_texture_float');
+        gl = null;
+	}
+
+	if(gl && !gl.getExtension('OES_texture_float_linear'))
+	{
+        alert('Fail OES_texture_float_linear');
+        gl = null;
+	}
 	
 	if(gl)
 	{
