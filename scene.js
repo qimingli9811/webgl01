@@ -202,18 +202,7 @@ class RenderCubic extends RenderBase
 	zT1 = 3;
 	moving = { x: 0, inc: 0.03, y: 0, incY: 0.01};
 	textures = [];
-
-	generateFace(ctx, faceColor, textColor, text)
-	{
-	  const {width, height} = ctx.canvas;  
-	  ctx.fillStyle = faceColor;
-	  ctx.fillRect(0, 0, width, height);
-	  ctx.font = `${width * 0.7}px sans-serif`;
-	  ctx.textAlign = 'center';
-	  ctx.textBaseline = 'middle';
-	  ctx.fillStyle = textColor;
-	  ctx.fillText(text, width / 2, height / 2);
-	}
+	texSquare = null;
 
     CreateMatrix() {
 		let m = mat4.create();
@@ -247,7 +236,8 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		gl.uniform1i(nTypeLoc1, 1);
 
 		{
-			gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);
+			//gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);
+			gl.bindTexture(gl.TEXTURE_2D,this.texSquare);
 			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 4*6*Uint16Array.BYTES_PER_ELEMENT);
 		}
 	}
@@ -295,7 +285,10 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		mat4.perspective(45, aspect, 0.1, 2000.0, projectionMatrix);
 		
 		if(this.textures.length < 1)
+		{
 			this.textures = Create_6_Textures(gl);
+			this.texSquare = TexFromImage(gl, '02.jpg');
+		}
 
 		for(let nB = 0; nB < nCubies; nB++)
 		{
