@@ -217,7 +217,12 @@ class RenderCubic extends RenderBase
 		let cameraMatrix = this.CreateMatrix();
 				
 		if(!bPauseObj)
-		  this.xRotA += 0.1 + 5 * 0.08;
+		{
+			//this.xRotA += 0.1 + 5 * 0.08;
+			const now = new Date();
+			const t = now.getSeconds() + now.getMilliseconds()/1000.0;
+			this.xRotA = t * 15.0;
+		}
 
 mat4.ortho(-aspect, aspect, -1, 1, -1, 1, projectionMatrix);
 mat4.scale(modelMatrix, [1.5, 1.5, 1.0]);
@@ -588,5 +593,6 @@ class RenderMoon extends RenderBase
 		this.angle += 0.01;
   	}
 }
+
 
 
