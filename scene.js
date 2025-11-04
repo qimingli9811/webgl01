@@ -248,7 +248,8 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		if(!this.program || !this.buffer || !this.#indexBuffer || this.program != gAll.programCubic)
 			alert("failed");
 		gl.useProgram(program);
-			
+		gl.disable(gl.CULL_FACE);			
+		
 	    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,this.#indexBuffer);
 
@@ -587,3 +588,4 @@ class RenderMoon extends RenderBase
 		this.angle += 0.01;
   	}
 }
+
