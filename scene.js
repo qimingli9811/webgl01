@@ -211,7 +211,7 @@ class RenderCubic extends RenderBase
 	}
 
 	xRotA = 0;
-	const startT = Date.now();
+	startT = Date.now();
     Draw_Square(gl, aspect, program) {
 		let projectionMatrix = this.CreateMatrix();
 		let modelMatrix = this.CreateMatrix();
@@ -222,8 +222,7 @@ class RenderCubic extends RenderBase
 			//this.xRotA += 0.1 + 5 * 0.08;
 			//const now = new Date();
 			//const t = now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds()/1000.0;
-			const endT = Date.now();
-			this.xRotA = 15.0 * (endT - startT) / 1000.0;
+			this.xRotA = 15.0 * (Date.now() - this.startT) / 1000.0;
 		}
 
 mat4.ortho(-aspect, aspect, -1, 1, -1, 1, projectionMatrix);
@@ -595,6 +594,7 @@ class RenderMoon extends RenderBase
 		this.angle += 0.01;
   	}
 }
+
 
 
 
