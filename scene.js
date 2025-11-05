@@ -353,7 +353,7 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 				//mat4.translate(modelMatrix, [nB*2.0-3, (this.zPos-2)/5.0, -this.zPos]);
 				mat4.translate(modelMatrix, [(nB - (nCubiesB - 1.0) / 2.0)*1.7, y, -this.zPos]);
 				if(!bPauseObj)
-				  this.xRot[nA] += 0.1 + nA * 0.2;
+				  this.xRot[nA] += 0.1 + nA * 0.1;
 				mat4.rotate(modelMatrix, this.xRot[nA] * Math.PI / 180.0, [0, 0, 1]);
 				mat4.rotate(modelMatrix, this.xRot[nA] * Math.PI / 180.0, [1, 0, 0]);
 				//mat4.rotate(modelMatrix, xRot[nA] * Math.PI / 180.0, [0, 1, 0]);
@@ -537,6 +537,7 @@ class RenderMoon extends RenderBase
 			this.angle += 0.01;
   	}
 }
+
 
 
 
