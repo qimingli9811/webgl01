@@ -371,7 +371,7 @@ function main()
 	{	
 		nCubies = 6;
 		canvas.width = 480;
-		canvas.height = 800;
+		canvas.height = 700;
 	}
 	
 	//const Btns = document.querySelectorAll("input");
@@ -426,4 +426,5 @@ function main()
 }
 
 window.onload = main;
+
 
