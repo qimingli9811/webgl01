@@ -3,7 +3,6 @@
 const vsSimple = `
   attribute vec2 aPosition;
   attribute vec3 aColor;
-  attribute vec2 aTexCoord;
 
   varying vec3 vColor;
   uniform float uAngle;
@@ -12,6 +11,7 @@ const vsSimple = `
 	float sinA = sin(uAngle);
 	mat2 rot = mat2(cosA, -sinA, sinA, cosA);
 	gl_Position = vec4(rot * aPosition, 0.0, 1.0);
+
 	vColor = aColor;
   }
 `;
@@ -28,7 +28,6 @@ const fsSimple = `
 const vsSimple2 = `
   attribute vec2 aPosition;
   attribute vec3 aColor;
-  varying vec2 vTexCoord;
   
   varying vec3 vColor;
   uniform float uAngle;
@@ -79,41 +78,55 @@ gl_Position = vec4(aPosition.x, aPosition.y, 0.0, 1.0);
 const fsCubic = `
 	//precision highp float;
 	precision mediump float;
-	precision highp int;   //int in vertex-shader is highp, default for fs is mediump
+	precision highp int;   //int in vsCubic is highp, default for fsCubic is mediump
 	varying vec2 vTexCoord;
 	
-	uniform int  nType; // A uniform is accessible in both shaders
-	uniform int  nType1; // A uniform is accessible in both shaders
 	uniform sampler2D uTexture;
+	uniform int  nType;
+	uniform int  nFaceIndex;
+	uniform float fVisibleR;
 
-	void main() {
-	   vec3 color = vec3(0.5, 0.9, 0.5);
-		//gl_FragColor = vec4(color, 1.0);
-		//gl_FragColor = vec4(color, 1.0) * 0.5 + 0.5*texture2D(uTexture, vTexCoord);
-		color = texture2D(uTexture, vTexCoord).xyz;
-		
-		// Circle mask
-		float dist = distance(vTexCoord, vec2(0.5, 0.5));
-		if (dist >= 0.49)
+	void Draw_Cubic(vec3 color, float dist)
+	{
+		float fR = fVisibleR;
+		if (dist >= fR)
 		{			
 			float alpha = 1.0 - smoothstep(0.49, 0.5, dist);
-			if (dist > 0.49)
-			{
-				if(nType == 0)
-					gl_FragColor = vec4(0.5, 0.5, 0.5, 0.3);
-				else if(nType == 1)
-					gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-			}
+			if (dist > fR)
+				gl_FragColor = vec4(0.5, 0.5, 0.5, 0.3);
 			else
 				gl_FragColor = vec4(0.5, 0.9, 0.5, alpha);
 		}
 		else
-		{
-			if(nType1 == 0)
-				gl_FragColor = vec4(color, 1.0);
+			gl_FragColor = vec4(color, 1.0);
+	}
+
+	void Draw_Square(vec3 color, float dist)
+	{
+		float fR = 0.49;
+		if (dist >= fR)
+		{			
+			float alpha = 1.0 - smoothstep(0.49, 0.5, dist);
+			if (dist > fR)
+				gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
 			else
-				gl_FragColor = vec4(color, 0.7);
+				gl_FragColor = vec4(0.5, 0.9, 0.5, alpha);
 		}
+		else
+			gl_FragColor = vec4(color, 0.7);
+	}
+
+	void main() {
+	    //vec3 color = vec3(0.5, 0.9, 0.5);
+		//gl_FragColor = vec4(color, 1.0);
+		//gl_FragColor = vec4(color, 1.0) * 0.5 + 0.5*texture2D(uTexture, vTexCoord);
+		
+		vec3 color = texture2D(uTexture, vTexCoord).xyz;	
+		float dist = distance(vTexCoord, vec2(0.5, 0.5));
+		if(nType == 1)
+			Draw_Square(color, dist);
+		else
+			Draw_Cubic(color, dist);		
 	}
 `;
 //======================================================
@@ -122,7 +135,7 @@ const vsMoon1 = `
     attribute vec3 aNormal;         
     attribute vec2 aTextureCoord;   
                                     
-    uniform mat4 modelviewMatrix;   
+    uniform mat4 modelviewMatrix;
     uniform mat4 projMatrix;        
     uniform mat3 normalMatrix;      
                                     

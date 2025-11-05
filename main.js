@@ -46,12 +46,9 @@ function setActiveButton(activeBtn)
 	activeBtn.classList.add("active");
 }
 
-let angle = 0;
 let nCount = 0;
 function renderGL(time)
 {
-	if(!bPauseObj)
-	  angle += 0.01;
 	nCount++;
 	
     var info = document.getElementById("info");
@@ -73,7 +70,6 @@ gAll.editBox = document.getElementById('editBox');
 gAll.editBox1 = document.getElementById('editBox1');
 gAll.editBox.value = nCircles;
 gAll.editBox1.value = nCubies;
-gAll.editBox1.style.display = "none";
 
 // Text change events
 function TextChange(e)
@@ -98,8 +94,8 @@ function TextChange(e)
 			nCubies = old;
 		else if(nCubies < 0)
 			nCubies = 0;
-		else if(nCubies > 4)
-			nCubies = 4;
+		else if(nCubies > 12)
+			nCubies = 12;
 		this.value = nCubies;
 	}
 }
@@ -327,7 +323,6 @@ gAll.uiCanvas.addEventListener('click', function()
 	  }
 
       //uiButtons[2].visible = uiButtons[2].visible == false;
-
 	  //if(btn.id != 0)
 	  //alert(btn.label + ' clicked!');
 	}
@@ -374,8 +369,9 @@ function main()
     const canvas = document.getElementById("myGL");
 	if(isAndroid() || isiPhone())
 	{
+		nCubies = 3;
 		canvas.width = 480;
-		canvas.height = 640;
+		canvas.height = 900;
 	}
 	
 	//const Btns = document.querySelectorAll("input");
@@ -409,6 +405,7 @@ function main()
 	gAll.renderObj["Moon"]    = new RenderMoon(gAll.programMoon);
 	
 	currentShape = gAll.renderObj["Cubic"];
+	gAll.editBox1.style.display = "block";
 	
 	const ui2D = gAll.uiCanvas;
 	gAll.ctx = ui2D.getContext('2d');

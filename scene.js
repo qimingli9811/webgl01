@@ -1,3 +1,4 @@
+let angle = 0.0;
 class RenderBase
 {
 	//#ssn; // private
@@ -41,13 +42,16 @@ class RenderBase
 
 	Draw(gl)
 	{
+		angle += 0.01;
 		//const program = this.program;
   	    const program = this.program;
 		gl.useProgram(program);
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 
 		const uAngle = gl.getUniformLocation(program, "uAngle");
-		gl.uniform1f(uAngle, angle);
+		//if(uAngle)
+			gl.uniform1f(uAngle, angle);
+		
 		gl.clearColor(0.1, 0.01, 0.1, 1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 		gl.drawArrays(gl.TRIANGLES, 0, this.vertexCount);
@@ -109,7 +113,7 @@ class RenderSquare extends RenderBase
 
 	Draw3()
 	{
-		super.Draw();
+//		super.Draw();
 	}
 }
 
@@ -233,13 +237,13 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		const cameraMatrixLoc = gl.getUniformLocation(program, "cameraMatrix");
 		const modelMatrixLoc = gl.getUniformLocation(program, "modelMatrix");
 		const nTypeLoc = gl.getUniformLocation(program, "nType");
-		const nTypeLoc1 = gl.getUniformLocation(program, "nType1");
+		//const nTypeLoc1 = gl.getUniformLocation(program, "nType1");
 
 		gl.uniformMatrix4fv(projMatrixLoc, false, projectionMatrix);
 		gl.uniformMatrix4fv(cameraMatrixLoc, false, cameraMatrix);
 		gl.uniformMatrix4fv(modelMatrixLoc, false, modelMatrix);
 		gl.uniform1i(nTypeLoc, 1);
-		gl.uniform1i(nTypeLoc1, 1);
+		//gl.uniform1i(nTypeLoc1, 1);
 
 		{
 			//gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);
@@ -248,13 +252,15 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		}
 	}
 
+	fVisibleR = 0.50; //0.49;
+	fVisibleR_Step = 0.0003;
 	Draw(gl)
 	{
   	    const program = this.program; //this.program;	
 		if(!this.program || !this.buffer || !this.#indexBuffer || this.program != gAll.programCubic)
 			alert("failed");
 		gl.useProgram(program);
-		gl.disable(gl.CULL_FACE);			
+		gl.disable(gl.CULL_FACE);
 		
 	    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,this.#indexBuffer);
@@ -279,17 +285,17 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		const cameraMatrixLoc = gl.getUniformLocation(program, "cameraMatrix");
 		const modelMatrixLoc = gl.getUniformLocation(program, "modelMatrix");
 		const nTypeLoc = gl.getUniformLocation(program, "nType");
-		const nTypeLoc1 = gl.getUniformLocation(program, "nType1");
+		//const nTypeLoc1 = gl.getUniformLocation(program, "nType1");
 		if(nTypeLoc)
 			gl.uniform1i(nTypeLoc, 0);
-		if(nTypeLoc1)
-			gl.uniform1i(nTypeLoc1, 0);
+		//if(nTypeLoc1)
+		//	gl.uniform1i(nTypeLoc1, 0);
 	
 		const projectionMatrix = mat4.create();
 		const cameraMatrix = mat4.lookAt([0, 0, 1], [0, 0, 0], [0, 1, 0]);
 		let modelMatrix = mat4.create();
 
-		mat4.perspective(45, aspect, 0.1, 2000.0, projectionMatrix);
+		mat4.perspective(45, aspect, 0.1, 100.0, projectionMatrix);
 		
 		if(this.textures.length < 1)
 		{
@@ -306,32 +312,61 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 				alert("Failed loading 6 textures");
 		}
 
-		for(let nB = 0; nB < nCubies; nB++)
+		this.fVisibleR -= this.fVisibleR_Step;
+		if(this.fVisibleR < 0.3 || this.fVisibleR > 0.75)
+			this.fVisibleR_Step = -this.fVisibleR_Step;
+		const nIndexLoc    = gl.getUniformLocation(program, 'nFaceIndex');
+		const fVisibleRLoc = gl.getUniformLocation(program, 'fVisibleR');
+		gl.uniform1f(fVisibleRLoc, this.fVisibleR);
+		
+		let nCubiesA = nCubies;
+		let nTry = 0;
+		const nMaxPerRow = 4;
+		if(isAndroid() || isiPhone())
+			nMaxPerRow = 3;
+		let y = 0.6;
+		if(nCubies > nMaxPerRow + nMaxPerRow)
+			y = 1.5;
+		else if(nCubies > nMaxPerRow)
+			y = 1.0;
+
+		while(nCubiesA > 0 && nTry < 100)
 		{
-			let nA = nB % 3;
-
-			mat4.identity(modelMatrix);
-			
-			this.zPos += 0.000;
-			mat4.translate(modelMatrix, [nB*2.0-3, (this.zPos-2)/5.0, -this.zPos]);
-			if(!bPauseObj)
-			  this.xRot[nA] += 0.1 + nA * 0.2;
-			mat4.rotate(modelMatrix, 0.017453292 * this.xRot[nA], [0, 0, 1]);  //pi/180=0.017453292
-			mat4.rotate(modelMatrix, 0.017453292 * this.xRot[nA], [1, 0, 0]);  //pi/180=0.017453292
-			//mat4.rotate(modelMatrix, 0.017453292 * xRot[nA], [0, 1, 0]);  //pi/180=0.017453292
-
-			if(projMatrixLoc)
-				gl.uniformMatrix4fv(projMatrixLoc, false, projectionMatrix);
-			if(cameraMatrixLoc)
-				gl.uniformMatrix4fv(cameraMatrixLoc, false, cameraMatrix);
-			if(modelMatrixLoc)
-				gl.uniformMatrix4fv(modelMatrixLoc, false, modelMatrix);
-
-			for(let i = 0; i < 6; i++)
+			nTry++;
+			let nCubiesB = nCubiesA;
+			if(nCubiesB > nMaxPerRow)
+				nCubiesB = nMaxPerRow;
+			nCubiesA -= nCubiesB;
+			for(let nB = 0; nB < nCubiesB; nB++)
 			{
-				gl.bindTexture(gl.TEXTURE_2D,this.textures[i]);
-				gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, i*6*Uint16Array.BYTES_PER_ELEMENT);
+				let nA = nB % 3;
+
+				mat4.identity(modelMatrix);
+				
+				this.zPos += 0.000;
+				//mat4.translate(modelMatrix, [nB*2.0-3, (this.zPos-2)/5.0, -this.zPos]);
+				mat4.translate(modelMatrix, [(nB - (nCubiesB - 1.0) / 2.0)*1.7, y, -this.zPos]);
+				if(!bPauseObj)
+				  this.xRot[nA] += 0.1 + nA * 0.2;
+				mat4.rotate(modelMatrix, this.xRot[nA] * Math.PI / 180.0, [0, 0, 1]);
+				mat4.rotate(modelMatrix, this.xRot[nA] * Math.PI / 180.0, [1, 0, 0]);
+				//mat4.rotate(modelMatrix, xRot[nA] * Math.PI / 180.0, [0, 1, 0]);
+
+				if(projMatrixLoc)
+					gl.uniformMatrix4fv(projMatrixLoc, false, projectionMatrix);
+				if(cameraMatrixLoc)
+					gl.uniformMatrix4fv(cameraMatrixLoc, false, cameraMatrix);
+				if(modelMatrixLoc)
+					gl.uniformMatrix4fv(modelMatrixLoc, false, modelMatrix);
+
+				for(let i = 0; i < 6; i++)
+				{
+					gl.uniform1i(nIndexLoc, i);
+					gl.bindTexture(gl.TEXTURE_2D,this.textures[i]);
+					gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, i*6*Uint16Array.BYTES_PER_ELEMENT);
+				}
 			}
+			y -= 1.8;
 		}
 		
 		this.Draw_Square(gl, aspect, program);
@@ -442,82 +477,6 @@ class RenderMoon extends RenderBase
 		gl.vertexAttribPointer(aNormal, 3, gl.FLOAT, false, 0, 0);
 	}
 	
-	perspective(fov, aspect, near, far) 
-	{
-		const f = 1.0 / Math.tan(fov / 2);
-		const rangeInv = 1 / (near - far);
-		return [
-			f / aspect, 0, 0, 0,
-			0, f, 0, 0,
-			0, 0, (near + far) * rangeInv, -1,
-			0, 0, near * far * rangeInv * 2, 0
-		];
-	}
-
-	identity() {
-	  return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
-	}
-
-	translateA(m, x, y, z) {
-	  const out = m.slice();
-	  out[12] = x; out[13] = y; out[14] = z;
-	  return out;
-	}
-	
-	translate(m, x, y, z) {
-		const tm = [
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		x, y, z, 1];
-		return this.multiply(m, tm);
-	}
-
-	multiply(a, b) 
-	{
-		const out = new Array(16);
-		for (let i = 0; i < 4; i++)
-		{
-			for (let j = 0; j < 4; j++)
-				out[i*4+j] = a[i*4+0]*b[0*4+j] + a[i*4+1]*b[1*4+j] + a[i*4+2]*b[2*4+j] + a[i*4+3]*b[3*4+j];
-		}
-		return out;
-    }
-
-	rotateX(m, angle) {
-		const c = Math.cos(angle);
-		const s = Math.sin(angle);
-		const r = this.identity();
-		r[5] = c; r[6] = -s; r[9] = s; r[10] = c;
-		return this.multiply(m, r);
-	}
-  
-	//Math.sin(a): a in radians, not degrees
-	rotateY(m, angle)
-	{
-	  const c = Math.cos(angle), s = Math.sin(angle);
-	  const r = this.identity();
-	  r[0] = c; r[2] = s; r[8] = -s; r[10] = c;
-	  return this.multiply(m, r);
-	}
-	
-	rotateZ(m, angle) {
-		const c = Math.cos(angle), s = Math.sin(angle);
-		const r = this.identity();
-		r[0] = c; r[1] = -s; r[4] = s; r[5] = c;
-		return this.multiply(m, r);
-	}
-	
-	scale(m, sx, sy, sz) {
-		const sm = [
-		sx, 0,  0,  0,
-		0,  sy, 0,  0,
-		0,  0,  sz, 0,
-		0,  0,  0,  1
-		];
-		return this.multiply(m, sm);
-	}
-
 	angle = 0;
 	posZ = 3.0;
 	posZ_Step = 1.005;
@@ -537,64 +496,41 @@ class RenderMoon extends RenderBase
 		gl.enable(gl.BLEND);
 		gl.enable(gl.DEPTH_TEST);
 
-		this.posZ *= this.posZ_Step;
-		if(this.posZ > 30 || this.posZ < 2.0)
-			this.posZ_Step = 1.0/this.posZ_Step;
-		
-		if(0)
+		if(!bPauseObj)
 		{
-			const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-			let proj1 = mat4.create();
-			mat4.identity(proj1);
-		    mat4.perspective(45, aspect, 0.1, 100.0, proj1);
+			this.posZ *= this.posZ_Step;
+			if(this.posZ > 30 || this.posZ < 2.0)
+				this.posZ_Step = 1.0/this.posZ_Step;
+		}
+		
+		const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+		{
+			let proj = mat4.create();
+			mat4.identity(proj);
+		    mat4.perspective(45, aspect, 0.1, 100.0, proj);
 
-			let model1 = mat4.create();
-			mat4.identity(model1);
-			mat4.rotate(model1, this.angle, [0, 1, 0]);  //pi/180=0.017453292
+			let model = mat4.create();
+			mat4.identity(model);
+			mat4.rotate(model, this.angle, [1, 1, 0]);
 
-			let view1 = mat4.create();
-			mat4.identity(view1);
-			mat4.translate(view1, 0.0, 0.0, -this.posZ);
+			let view = mat4.create();
+			mat4.identity(view);
+			mat4.translate(view, [0.0, 0.0, -this.posZ]);
 
 			const uProjLoc = gl.getUniformLocation(program, 'uProj');
-			const uViewLoc = gl.getUniformLocation(program, 'uView');
-			const uModelLoc = gl.getUniformLocation(program, 'uModel');
-			gl.uniformMatrix4fv(uProjLoc, false, proj1);
-			gl.uniformMatrix4fv(uViewLoc, false, view1);
-			gl.uniformMatrix4fv(uModelLoc, false, model1);
-		}
-
-		else
-		{
-			const proj = this.perspective(Math.PI / 4, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100);
-			const view = this.translate(this.identity(), 0, 0, -this.posZ);
-			let model = this.rotateY(this.identity(), this.angle);
-			model = this.rotateX(model, this.angle);
-			//this.nScale /= 1.01;
-			//model = this.scale(this.identity(), this.nScale, this.nScale, 1.0);
-					
-//const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-//let proj1 = mat4.create(); 
-//mat4.identity(proj1);
-//mat4.
-//proj1 = mat4.perspective(45*0.017453292, aspect, 0.1, 100.0, proj1);
-//alert(proj + '\n\n' + proj1);
-
-			const uProjLoc = gl.getUniformLocation(program, 'uProj'); 
 			const uViewLoc = gl.getUniformLocation(program, 'uView');
 			const uModelLoc = gl.getUniformLocation(program, 'uModel');
 			gl.uniformMatrix4fv(uProjLoc, false, proj);
 			gl.uniformMatrix4fv(uViewLoc, false, view);
 			gl.uniformMatrix4fv(uModelLoc, false, model);
 		}
-		
 
 		gl.drawElements(gl.TRIANGLES, this.sphere.indices.length, gl.UNSIGNED_SHORT, 0);
 
-		this.angle += 0.01;
+		if(!bPauseObj)
+			this.angle += 0.01;
   	}
 }
-
 
 
 
