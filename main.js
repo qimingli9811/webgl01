@@ -372,7 +372,7 @@ function main()
 		nCubies = 6;
 		gAll.editBox1.value = nCubies;
 		canvas.width = 480;
-		canvas.height = 700;
+		canvas.height = 800;
 	}
 	
 	//const Btns = document.querySelectorAll("input");
@@ -427,6 +427,7 @@ function main()
 }
 
 window.onload = main;
+
 
 
 
