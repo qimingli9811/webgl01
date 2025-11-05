@@ -206,7 +206,6 @@ class RenderCubic extends RenderBase
 	zT1 = 3;
 	moving = { x: 0, inc: 0.03, y: 0, incY: 0.01};
 	textures = [];
-	texSquare = null;
 
     CreateMatrix() {
 		let m = mat4.create();
@@ -216,6 +215,8 @@ class RenderCubic extends RenderBase
 
 	xRotA = 0;
 	startT = Date.now();
+	start2 = Date.now();
+	nNextTexture = 0;
     Draw_Square(gl, aspect, program) {
 		let projectionMatrix = this.CreateMatrix();
 		let modelMatrix = this.CreateMatrix();
@@ -246,8 +247,15 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		//gl.uniform1i(nTypeLoc1, 1);
 
 		{
+			if(Date.now() - this.start2 > 5000)
+			{
+				this.nNextTexture++;
+				this.start2 = Date.now();
+			}
+			const texSquare = this.textures[this.nNextTexture % 6];
+
 			//gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);
-			gl.bindTexture(gl.TEXTURE_2D,this.texSquare);
+			gl.bindTexture(gl.TEXTURE_2D, texSquare);
 			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 4*6*Uint16Array.BYTES_PER_ELEMENT);
 		}
 	}
@@ -307,7 +315,6 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 			this.textures.push(TexFromImage(gl, '04.jpg'));
 			this.textures.push(TexFromImage(gl, '05.jpg'));
 			this.textures.push(TexFromImage(gl, '06.jpg'));
-			this.texSquare = TexFromImage(gl, '02.jpg');
 			if(this.textures.length != 6)
 				alert("Failed loading 6 textures");
 		}
@@ -537,6 +544,7 @@ class RenderMoon extends RenderBase
 			this.angle += 0.01;
   	}
 }
+
 
 
 
