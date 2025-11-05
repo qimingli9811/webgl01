@@ -323,7 +323,10 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		let nTry = 0;
 		let nMaxPerRow = 4;
 		if(isAndroid() || isiPhone())
+		{
 			nMaxPerRow = 3;
+			this.zPos = 9;
+		}
 		let y = 0.6;
 		if(nCubies > nMaxPerRow + nMaxPerRow)
 			y = 1.5;
@@ -343,7 +346,7 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 
 				mat4.identity(modelMatrix);
 				
-				this.zPos += 0.000;
+				this.zPos += 0.00;
 				//mat4.translate(modelMatrix, [nB*2.0-3, (this.zPos-2)/5.0, -this.zPos]);
 				mat4.translate(modelMatrix, [(nB - (nCubiesB - 1.0) / 2.0)*1.7, y, -this.zPos]);
 				if(!bPauseObj)

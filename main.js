@@ -364,12 +364,12 @@ function AddTopButtons()
 	});
 }	
 
-function main() 
+function main()
 {
     const canvas = document.getElementById("myGL");
 	if(isAndroid() || isiPhone())
-	{
-		nCubies = 3;
+	{	
+		nCubies = 6;
 		canvas.width = 480;
 		canvas.height = 900;
 	}

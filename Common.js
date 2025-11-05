@@ -55,7 +55,7 @@ function TexFromImage(gl, src)
 		{
 			// Non-power-of-2: disable mipmaps and clamp wrapping
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);		
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		}
@@ -110,6 +110,7 @@ function Create_6_Textures(gl)
 	});
 	return textures;
 }
+
 //=================================================
 function isAndroid() {
 	const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -122,15 +123,156 @@ function isiPhone() {
 }
 
 //=================================================
+/*
+const Mtx = {
+	perspective(fov, aspect, near, far) 
+	{
+		const f = 1.0 / Math.tan(fov / 2);
+		const rangeInv = 1 / (near - far);
+		return [
+			f / aspect, 0, 0, 0,
+			0, f, 0, 0,
+			0, 0, (near + far) * rangeInv, -1,
+			0, 0, near * far * rangeInv * 2, 0
+		];
+	},
+	
+	ortho(left, right, bottom, top, near, far)
+	{
+		const lr = 1 / (left - right);
+		const bt = 1 / (bottom - top);
+		const nf = 1 / (near - far);
+		return [
+		  -2 * lr, 0, 0, 0,
+		  0, -2 * bt, 0, 0,
+		  0, 0, 2 * nf, 0,
+		  (left + right) * lr,
+		  (top + bottom) * bt,
+		  (far + near) * nf,
+		  1
+		];
+	  },
+	  
+	lookAt(eye, target, up) {
+		const [ex, ey, ez] = eye;
+		const [tx, ty, tz] = target;
+		const [ux, uy, uz] = up;
+
+		// zAxis = normalize(eye - target)
+		let zx = ex - tx, zy = ey - ty, zz = ez - tz;
+		const zLen = Math.hypot(zx, zy, zz);
+		zx /= zLen; zy /= zLen; zz /= zLen;
+
+		// xAxis = normalize(cross(up, zAxis))
+		let xx = uy * zz - uz * zy;
+		let xy = uz * zx - ux * zz;
+		let xz = ux * zy - uy * zx;
+		const xLen = Math.hypot(xx, xy, xz);
+		xx /= xLen; xy /= xLen; xz /= xLen;
+
+		// yAxis = cross(zAxis, xAxis)
+		const yx = zy * xz - zz * xy;
+		const yy = zz * xx - zx * xz;
+		const yz = zx * xy - zy * xx;
+
+		return [
+		  xx, yx, zx, 0,
+		  xy, yy, zy, 0,
+		  xz, yz, zz, 0,
+		  -(xx * ex + xy * ey + xz * ez),
+		  -(yx * ex + yy * ey + yz * ez),
+		  -(zx * ex + zy * ey + zz * ez),
+		  1
+		];
+	  },
+	  
+	identity() {
+	  return [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+	},
+
+	translateA(m, x, y, z) {
+	  const out = m.slice();
+	  out[12] = x; out[13] = y; out[14] = z;
+	  return out;
+	},
+
+	translate(m, x, y, z) {
+		const tm = [
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		x, y, z, 1];
+		return this.multiply(m, tm);
+	},
+
+	multiply(a, b) 
+	{
+		const out = new Array(16);
+		for (let i = 0; i < 4; i++)
+		{
+			for (let j = 0; j < 4; j++)
+				out[i*4+j] = a[i*4+0]*b[0*4+j] + a[i*4+1]*b[1*4+j] + a[i*4+2]*b[2*4+j] + a[i*4+3]*b[3*4+j];
+		}
+		return out;
+	},
+
+	rotateX(m, angle) {
+		const c = Math.cos(angle), s = Math.sin(angle);
+		const r = this.identity();
+		r[5] = c; r[6] = -s; r[9] = s; r[10] = c;
+		return this.multiply(m, r);
+	},
+
+	//Math.sin(a): a in radians, not degrees
+	rotateY(m, angle)
+	{
+	  const c = Math.cos(angle), s = Math.sin(angle);
+	  const r = this.identity();
+	  r[0] = c; r[2] = s; r[8] = -s; r[10] = c;
+	  return this.multiply(m, r);
+	},
+
+	rotateZ(m, angle) {
+		const c = Math.cos(angle), s = Math.sin(angle);
+		const r = this.identity();
+		r[0] = c; r[1] = -s; r[4] = s; r[5] = c;
+		return this.multiply(m, r);
+	},
+	
+	rotate(m, angle, axis)
+	{
+		let [x, y, z] = axis;	
+		if(x != 0)
+			m = this.rotateX(m, angle);
+		if(y != 0)
+			m = this.rotateY(m, angle);
+		if(z != 0)
+			m = this.rotateZ(m, angle);
+		return m;
+	},
+
+	scale(m, sx, sy, sz) {
+		const sm = [
+		sx, 0,  0,  0,
+		0,  sy, 0,  0,
+		0,  0,  sz, 0,
+		0,  0,  0,  1
+		];
+		return this.multiply(m, sm);
+	}
+};
+*/
+
+//=================================================
 var createWebGL = function (canGL) 
 {
 	let gl = null;
     try
 	{
 		//support: GLSL ES 1.0 and GLSL ES 3.0 period
-		//gl = canGL.getContext('webgl2', { alpha: true, antialias: true });
+		//gl = canGL.getContext('webgl2', { alpha: true, antialias: false });
 		//if(!gl) //GLSL ES 1.0
-		gl = canGL.getContext('webgl', { alpha: true, antialias: true });
+		gl = canGL.getContext('webgl', { alpha: true, antialias: true, depth: true });
 		if(!gl)
 			gl = canGL.getContext('experimental-webgl');
     } catch (e) {
@@ -148,7 +290,7 @@ var createWebGL = function (canGL)
         alert('Fail OES_texture_float');
         gl = null;
 	}
-
+	
 	if(gl && !gl.getExtension('OES_texture_float_linear'))
 	{
 		//  alert('Fail OES_texture_float_linear');
