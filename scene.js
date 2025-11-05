@@ -321,7 +321,7 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		
 		let nCubiesA = nCubies;
 		let nTry = 0;
-		const nMaxPerRow = 4;
+		let nMaxPerRow = 4;
 		if(isAndroid() || isiPhone())
 			nMaxPerRow = 3;
 		let y = 0.6;
