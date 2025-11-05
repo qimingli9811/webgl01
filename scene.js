@@ -345,8 +345,8 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 			nCubiesA -= nCubiesB;
 			for(let nB = 0; nB < nCubiesB; nB++)
 			{
-				let nA = nB % 3;
-
+				let nA = (nTry + nB) % 5;
+				
 				mat4.identity(modelMatrix);
 				
 				this.zPos += 0.00;
@@ -537,6 +537,7 @@ class RenderMoon extends RenderBase
 			this.angle += 0.01;
   	}
 }
+
 
 
 
