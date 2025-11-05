@@ -322,7 +322,8 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		let nCubiesA = nCubies;
 		let nTry = 0;
 		let nMaxPerRow = 4;
-		if(isAndroid() || isiPhone())
+		const bPhone = isAndroid() || isiPhone();
+		if(bPhone)
 		{
 			nMaxPerRow = 3;
 			this.zPos = 9;
@@ -332,6 +333,8 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 			y = 1.5;
 		else if(nCubies > nMaxPerRow)
 			y = 1.0;
+		if(bPhone)
+			y += 1.0;
 
 		while(nCubiesA > 0 && nTry < 100)
 		{
@@ -534,6 +537,7 @@ class RenderMoon extends RenderBase
 			this.angle += 0.01;
   	}
 }
+
 
 
 
