@@ -468,6 +468,7 @@ function main()
 	wrapper.style.height = canvas.height + "px";
 
 	AddTopButtons();
+	editBox1.value = nCubies;
 
     // --- Initialize & Render ---
     currentShape.loadShape(gAll.gl);
