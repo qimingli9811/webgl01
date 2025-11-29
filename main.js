@@ -264,6 +264,7 @@ function Draw_circles(time, ctx, ui2D)
 	}
 	
 	//=====draw sun
+	if(currentShape == gAll.renderObj["Moon"])
 	{
 	  const x = sunX; //w / 2 + w * 0.45;
 	  const y = sunY; //h / 2 + h * 0.45;
