@@ -260,12 +260,13 @@ function drawRoundedRect(ctx, x, y, width, height, radius, fillStyle, strokeStyl
 
 let tElapseX = Math.random();
 let tElapseY = Math.random();
+let tElapseSun = Math.random();
 function Draw_circles(time, ctx, ui2D)
 {
 	if(!bPauseCircle)
 	{
 		tElapseX += 0.005;
-		tElapseX += 0.002;
+		tElapseY += 0.002;
 	}
 
 	const w = ui2D.width;
@@ -293,8 +294,10 @@ function Draw_circles(time, ctx, ui2D)
 	{
 	  if(isAndroid() || isiPhone())
 	  {
-		  const x = w / 2 + Math.sin(t*2) * w * 0.47;
-		  const y = h / 2 + Math.cos(t*2) * h * 0.47;
+ 	  	  tElapseSun += 0.01;
+
+		  const x = w / 2 + Math.sin(tElapseSun) * w * 0.47;
+		  const y = h / 2 + Math.cos(tElapseSun) * h * 0.47;
 		  const r = 20;
 		  sunX = x;
 		  sunY = y;
