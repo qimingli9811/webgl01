@@ -86,8 +86,18 @@ CanvasA.addEventListener("mousedown", e => {
     lastY = e.clientY;
     CanvasA.style.cursor = "grab";
 });
+CanvasA.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    CanvasA.style.cursor = "grab";
+});
+
 CanvasA.addEventListener("mouseup", ()=>{ dragging=false; CanvasA.style.cursor=lastCursor; });
+CanvasA.addEventListener('pointerup', () => { dragging=false; CanvasA.style.cursor=lastCursor; });
+
 CanvasA.addEventListener("mouseleave", ()=>{ dragging=false; CanvasA.style.cursor="grab"; });
+
 
 CanvasA.addEventListener("mousemove", e => {
     if (!dragging) return;
@@ -105,6 +115,21 @@ CanvasA.addEventListener("mousemove", e => {
     lastY = e.clientY;
 });
 
+CanvasA.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+
+    yaw   += dx * 0.005;
+    pitch += dy * 0.005;
+	sunX += dx;
+	sunY += dy;
+
+    pitch = Math.max(-Math.PI/2 + 0.01, Math.min(Math.PI/2 - 0.01, pitch));
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+});
 
 // Text change events
 function TextChange(e)
