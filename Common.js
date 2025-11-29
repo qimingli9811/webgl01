@@ -119,6 +119,7 @@ function isAndroid() {
 
 function isiPhone() {
 	const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+//return true;	
 	return /iPhone/i.test(userAgent);
 }
 

@@ -206,6 +206,7 @@ class RenderCubic extends RenderBase
 	zT1 = 3;
 	moving = { x: 0, inc: 0.03, y: 0, incY: 0.01};
 	textures = [];
+	//texSquare = null;
 
     CreateMatrix() {
 		let m = mat4.create();
@@ -217,6 +218,7 @@ class RenderCubic extends RenderBase
 	startT = Date.now();
 	start2 = Date.now();
 	nNextTexture = 0;
+	
     Draw_Square(gl, aspect, program) {
 		let projectionMatrix = this.CreateMatrix();
 		let modelMatrix = this.CreateMatrix();
@@ -238,6 +240,7 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 		const cameraMatrixLoc = gl.getUniformLocation(program, "cameraMatrix");
 		const modelMatrixLoc = gl.getUniformLocation(program, "modelMatrix");
 		const nTypeLoc = gl.getUniformLocation(program, "nType");
+		
 		//const nTypeLoc1 = gl.getUniformLocation(program, "nType1");
 
 		gl.uniformMatrix4fv(projMatrixLoc, false, projectionMatrix);
@@ -255,7 +258,7 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 			const texSquare = this.textures[this.nNextTexture % 6];
 
 			//gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);
-			gl.bindTexture(gl.TEXTURE_2D, texSquare);
+			gl.bindTexture(gl.TEXTURE_2D,texSquare);
 			gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 4*6*Uint16Array.BYTES_PER_ELEMENT);
 		}
 	}
@@ -353,7 +356,7 @@ mat4.rotate(modelMatrix, 0.017453292 * this.xRotA, [1, 0, 1]);  //pi/180=0.01745
 			for(let nB = 0; nB < nCubiesB; nB++)
 			{
 				let nA = (nTry + nB) % 5;
-				
+
 				mat4.identity(modelMatrix);
 				
 				this.zPos += 0.00;
@@ -533,9 +536,14 @@ class RenderMoon extends RenderBase
 			const uProjLoc = gl.getUniformLocation(program, 'uProj');
 			const uViewLoc = gl.getUniformLocation(program, 'uView');
 			const uModelLoc = gl.getUniformLocation(program, 'uModel');
+			const nSunDirLoc = gl.getUniformLocation(program, "vSunDir");
 			gl.uniformMatrix4fv(uProjLoc, false, proj);
 			gl.uniformMatrix4fv(uViewLoc, false, view);
 			gl.uniformMatrix4fv(uModelLoc, false, model);
+			
+			const x = 10*(sunX - gAll.uiCanvas.width/2.0)/gAll.uiCanvas.width;
+			const y = -10*(sunY - gAll.uiCanvas.height/2.0)/gAll.uiCanvas.height;
+			gl.uniform2f(nSunDirLoc, x, y);
 		}
 
 		gl.drawElements(gl.TRIANGLES, this.sphere.indices.length, gl.UNSIGNED_SHORT, 0);
@@ -544,10 +552,6 @@ class RenderMoon extends RenderBase
 			this.angle += 0.01;
   	}
 }
-
-
-
-
 
 
 

@@ -208,13 +208,21 @@ const psMoon = `
 	precision mediump float;
 	varying vec3 vNormal;
 	varying vec2 vTexCoord;
+	
+	uniform vec2 vSunDir;
 	uniform sampler2D uSampler;
 	void main() 
 	{
-	  vec3 lightDir = normalize(vec3(0.5, 0.7, 1.0));
+	  //vec3 lightDir = normalize(vec3(1.0, 2.0, 0.5));
+	  vec3 lightDir = normalize(vec3(vSunDir.x, vSunDir.y, 0.5));
 	  float diff = max(dot(normalize(vNormal), lightDir), 0.0);
-	  vec3 color = vec3(0.3, 0.6, 1.0) * diff + vec3(0.05);
+	  vec4 clrTex = texture2D(uSampler, vTexCoord);
+  	  vec3 color = clrTex.rgb * diff + vec3(0.05);
+	  //vec3 color = vec3(0.3, 0.6, 1.0) * diff + vec3(0.05);
+	  
 	  gl_FragColor = vec4(color, 1.0);
-	  gl_FragColor = texture2D(uSampler, vTexCoord);
+	  
+	  //gl_FragColor = texture2D(uSampler, vTexCoord);  
+	  //gl_FragColor.r = 1.0;
 	}
 `;

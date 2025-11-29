@@ -14,6 +14,7 @@ let gAll = {
   ctx: null,
   
   uiCanvas: null,
+  glCanvas: null,
   editBox:  null,
   editBox1: null,
   
@@ -66,10 +67,44 @@ function renderGL(time)
 }
 
 gAll.uiCanvas = document.getElementById('my2D');
+gAll.glCanvas = document.getElementById("myGL");
 gAll.editBox = document.getElementById('editBox');
 gAll.editBox1 = document.getElementById('editBox1');
 gAll.editBox.value = nCircles;
-gAll.editBox1.value = nCubies;
+
+// --------- MOUSE ROTATION ---------
+let yaw = 0, pitch = 0;
+let dragging = false;
+let lastX = 0, lastY = 0;
+let sunX = 270, sunY = 50;
+
+const CanvasA = gAll.uiCanvas;
+let lastCursor = CanvasA.style.cursor;
+CanvasA.addEventListener("mousedown", e => {
+    dragging = true;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    CanvasA.style.cursor = "grab";
+});
+CanvasA.addEventListener("mouseup", ()=>{ dragging=false; CanvasA.style.cursor=lastCursor; });
+CanvasA.addEventListener("mouseleave", ()=>{ dragging=false; CanvasA.style.cursor="grab"; });
+
+CanvasA.addEventListener("mousemove", e => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+
+    yaw   += dx * 0.005;
+    pitch += dy * 0.005;
+	sunX += dx;
+	sunY += dy;
+
+    pitch = Math.max(-Math.PI/2 + 0.01, Math.min(Math.PI/2 - 0.01, pitch));
+
+    lastX = e.clientX;
+    lastY = e.clientY;
+});
+
 
 // Text change events
 function TextChange(e)
@@ -227,6 +262,20 @@ function Draw_circles(time, ctx, ui2D)
 	  ctx.shadowBlur = 15;
 	  ctx.fill();
 	}
+	
+	//=====draw sun
+	{
+	  const x = sunX; //w / 2 + w * 0.45;
+	  const y = sunY; //h / 2 + h * 0.45;
+	  const r = 20;
+	  const hue = 180;
+	  ctx.beginPath();
+	  ctx.arc(x, y, r, 0, Math.PI * 2);
+	  ctx.fillStyle = `rgba(255.0, 1.0, 1.0, 1.0)`;
+	  ctx.shadowColor = `rgba(1.0, 1.0, 1.0, 0.8)`;
+	  ctx.shadowBlur = 15;
+	  ctx.fill();	
+	}		
 }
 
 function render2D(time, ctx, ui2D, mouse)
@@ -427,7 +476,3 @@ function main()
 }
 
 window.onload = main;
-
-
-
-
