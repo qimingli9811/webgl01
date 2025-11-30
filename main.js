@@ -48,17 +48,27 @@ function setActiveButton(activeBtn)
 }
 
 let nCount = 0;
+let fFPS = 0.0;
+let lastTime = performance.now();
 function renderGL(time)
 {
 	nCount++;
+	const t = time - lastTime;
+	if(t >= 1000)
+	{
+		fFPS = 1000.0 * nCount / t;
+		nCount = 0;
+		lastTime = performance.now();
+	}
 	
-    var info = document.getElementById("info");
+	let sDevice = "";
 	if (isAndroid())
-	    info.innerHTML = "(Android) " + nCount;
+	    sDevice = "(Android) ";
 	else if(isiPhone())
-	    info.innerHTML = "(iPhone) " + nCount;
-	else
-	    info.innerHTML = nCount;
+	    sDevice = "(iPhone) ";
+	
+    const info = document.getElementById("info");
+    info.innerHTML = sDevice + fFPS.toFixed(1) + "fps";
 
 	currentShape.Draw(gAll.gl);
 
