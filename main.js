@@ -329,6 +329,15 @@ function Draw_circles(time, ctx, ui2D)
 		  ctx.shadowColor = `rgba(1.0, 1.0, 1.0, 0.8)`;
 		  ctx.shadowBlur = 15;
 		  ctx.fill();	
+
+  		  // Draw a line
+		  ctx.strokeStyle = 'red'; // line color
+		  ctx.lineWidth = 1;        // line thickness
+
+		  ctx.beginPath();           // Start a new path
+		  ctx.moveTo(x, y);        // Starting point (x, y)
+		  ctx.lineTo(w/2, h/2);      // Ending point (x, y)
+		  ctx.stroke();              // Draw the path
 	  }
 	}		
 }
