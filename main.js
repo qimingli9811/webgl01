@@ -13,7 +13,7 @@ let gAll = {
   gl: null,
   ctx: null,
   
-  uiCanvas: null, 
+  uiCanvas: null,
   glCanvas: null,
   editBox:  null,
   editBox1: null,
@@ -258,6 +258,33 @@ function drawRoundedRect(ctx, x, y, width, height, radius, fillStyle, strokeStyl
 	ctx.stroke();
 }
 
+function drawRotatedLines(ctx, x1, y1, x2, y2) {
+	const degree = 12; // 9 degrees in radians
+    const angleStep = degree * Math.PI / 180;
+	const count = 360 / degree;
+
+    // Get original angle and distance
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const baseAngle = Math.atan2(dy, dx);
+
+	let angle = baseAngle;
+	for (let i = 0; i < count; i++)
+	{
+		let length = 50; //Math.hypot(dx, dy);
+		if(i == 0)
+			length = Math.hypot(dx, dy);
+        const x = x1 + Math.cos(angle) * length;
+        const y = y1 + Math.sin(angle) * length;
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+		angle += angleStep;
+    }
+}
+
 let tElapseX = Math.random();
 let tElapseY = Math.random();
 let tElapseSun = Math.random();
@@ -292,53 +319,31 @@ function Draw_circles(time, ctx, ui2D)
 	//=====draw sun
 	if(currentShape == gAll.renderObj["Moon"])
 	{
+	  const r = 20;
+	  let x = sunX;
+	  let y = sunY;
 	  if(isAndroid() || isiPhone())
 	  {
  	  	  tElapseSun += 0.01;
-
-		  const x = w / 2 + Math.sin(tElapseSun) * w * 0.47;
-		  const y = h / 2 + Math.cos(tElapseSun) * h * 0.47;
-		  const r = 20;
+		  x = w / 2 + Math.sin(tElapseSun) * w * 0.47;
+		  y = h / 2 + Math.cos(tElapseSun) * h * 0.47;
 		  sunX = x;
 		  sunY = y;
-		  ctx.beginPath();
-		  ctx.arc(x, y, r, 0, Math.PI * 2);
-		  ctx.fillStyle = `rgba(255.0, 1.0, 1.0, 1.0)`;
-		  ctx.shadowColor = `rgba(1.0, 1.0, 1.0, 0.8)`;
-		  ctx.shadowBlur = 15;
-		  ctx.fill();
-		  
-  		  // Draw a line
-		  ctx.strokeStyle = 'red'; // line color
-		  ctx.lineWidth = 1;        // line thickness
-
-		  ctx.beginPath();           // Start a new path
-		  ctx.moveTo(x, y);        // Starting point (x, y)
-		  ctx.lineTo(w/2, h/2);      // Ending point (x, y)
-		  ctx.stroke();              // Draw the path
 	  }
-	  else
-	  {
-		  const x = sunX; //w / 2 + w * 0.45;
-		  const y = sunY; //h / 2 + h * 0.45;
-		  const r = 20;
-		  const hue = 180;
-		  ctx.beginPath();
-		  ctx.arc(x, y, r, 0, Math.PI * 2);
-		  ctx.fillStyle = `rgba(255.0, 1.0, 1.0, 1.0)`;
-		  ctx.shadowColor = `rgba(1.0, 1.0, 1.0, 0.8)`;
-		  ctx.shadowBlur = 15;
-		  ctx.fill();	
 
-  		  // Draw a line
-		  ctx.strokeStyle = 'red'; // line color
-		  ctx.lineWidth = 1;        // line thickness
+	  ctx.strokeStyle = `rgba(255.0, 100.0, 100.0, 1.0)`;
+	  ctx.lineWidth = 1;        // line thickness
+	  drawRotatedLines(ctx, x, y, w/2, h/2);  
 
-		  ctx.beginPath();           // Start a new path
-		  ctx.moveTo(x, y);        // Starting point (x, y)
-		  ctx.lineTo(w/2, h/2);      // Ending point (x, y)
-		  ctx.stroke();              // Draw the path
-	  }
+	  ctx.beginPath();
+	  ctx.arc(x, y, r, 0, Math.PI * 2);
+	  ctx.fillStyle = `rgba(255.0, 50.0, 50.0, 1.0)`;
+	  ctx.shadowColor = `rgba(255.0, 255.0, 255.0, 255.0)`;
+	  ctx.shadowBlur = 15;
+	  ctx.fill();
+	  ctx.fill();
+	  ctx.fill();
+	  ctx.fill();
 	}		
 }
 
@@ -541,4 +546,3 @@ function main()
 }
 
 window.onload = main;
-
