@@ -13,7 +13,7 @@ let gAll = {
   gl: null,
   ctx: null,
   
-  uiCanvas: null,
+  uiCanvas: null, 
   glCanvas: null,
   editBox:  null,
   editBox1: null,
@@ -541,3 +541,4 @@ function main()
 }
 
 window.onload = main;
+
